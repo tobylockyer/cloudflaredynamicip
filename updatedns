@@ -1,0 +1,13 @@
+#!/bin/bash
+
+zoneidentifier=<INSERTYOURZONEIDENTIFIED> # On the right hand side of the zone in the URL
+recordidentifier=<RECORDIDENTIFIED> #curl -X GET "https://api.cloudflare.com/client/v4/zones/<zoneidentifier>/dns_records"      -H "Authorization: Bearer <bearertoken>"      -H "Content-Type:application/json"| python -m json.tool
+bearertoken=Qoa48XbpsaaYL8hoNGMe5DIZ_rDcr6eREXpt8SqZ
+IP=$(curl ifconfig.me)
+record=<FULL DNS RECORD>
+dnsrecords=/tmp/dnsrecords.txt
+
+
+curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$zoneidentifier/dns_records"      -H "Authorization: Bearer $bearertoken"      -H "Content-Type:application/json"| python -m json.tool > $dnsrecords
+
+curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zoneidentifier/dns_records/$recordidentifier"      -H "Authorization: Bearer $bearertoken"      -H "Content-Type:application/json"   --data "{\"type\":\"A\",\"name\":\"$record\",\"content\":\"$IP\",\"ttl\":121,\"proxied\":false}"|python -m json.tool
